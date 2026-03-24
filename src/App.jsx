@@ -1,15 +1,19 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
+
+const letters = "abcdefghijklmnopqrstuvwxyz";
+const numbers = "0123456789";
+const symbols = "!@#$%^&*()-_=+<[]{}|;:'\",.>?/`~";
 
 function App() {
 
   const [user, setUser] = useState(
     {
-      name: '',
-      username: '',
-      password: '',
-      specializzazione: '',
-      esperienza: '',
-      descrizione: ''
+      name: 'budino',
+      username: 'cioccolato',
+      password: 'banana',
+      specializzazione: 'full cream',
+      esperienza: '8',
+      descrizione: 'scimmia'
     }
   )
 
@@ -23,8 +27,10 @@ function App() {
       !user.specializzazione.trim() ||
       !user.esperienza.trim() ||
       user.esperienza <= 0 ||
-      !user.descrizione.trim()
-
+      !user.descrizione.trim() ||
+      !nomeValido ||
+      !passwalida ||
+      !descriValida
 
     ) {
       alert('comiplare tutto a modino, rifai Bro')
@@ -43,6 +49,30 @@ function App() {
     });
   }
 
+  const nomeValido = useMemo(() => {
+
+    const caratteri = user.username.split('').every(car =>
+      letters.includes(car.toLowerCase()) ||
+      numbers.includes(car)
+    )
+
+    return caratteri && user.username.length >= 6
+  })
+
+  const passwalida = useMemo(() => {
+    return (user.password.trim().length >= 8 &&
+      user.password.split('').some(car => letters.includes(car)) &&
+      user.password.split('').some(car => numbers.includes(car)) &&
+      user.password.split('').some(car => symbols.includes(car))
+
+    )
+  })
+
+  const descriValida = useMemo(() => {
+    return user.descrizione.trim().length >= 100 &&
+      user.descrizione.trim().length < 1000
+  })
+
   return (
     <>
       <h1>hello world</h1>
@@ -55,10 +85,18 @@ function App() {
         <label><p>username</p>
           <input type="text" name="username" value={user.username} onChange={handleUserData} />
         </label>
+        {user.username.trim() && (
+          <p style={{ color: nomeValido ? 'green' : 'red' }}>
+            {nomeValido ? 'username valido' : 'minimo 6 caratteri alfanumerici'}
+          </p>)}
 
         <label><p>password</p>
           <input type="text" name="password" value={user.password} onChange={handleUserData} />
         </label>
+        {user.password.trim() && (
+          <p style={{ color: passwalida ? 'green' : 'red' }}>
+            {passwalida ? 'tutto ok' : 'minimo 8 caratteri con i simbolini'}
+          </p>)}
 
         <label><p>specializzazione</p>
           <select type="text" name="specializzazione" value={user.specializzazione} onChange={handleUserData}>
@@ -76,6 +114,10 @@ function App() {
         <label><p>descrizione</p>
           <textarea name="descrizione" value={user.descrizione} onChange={handleUserData} />
         </label>
+        {user.password.trim() && (
+          <p style={{ color: descriValida ? 'green' : 'red' }}>
+            {descriValida ? 'tutto ok' : 'più caratteri ma max 1000'}
+          </p>)}
 
         <hr />
         <button type="submit">manda i dati</button>
